@@ -1,4 +1,4 @@
-export default class LoginCheckValid {
+export default class checkInputValid {
   constructor(ID, PW) {
     this.ID = ID;
     this.PW = PW;
