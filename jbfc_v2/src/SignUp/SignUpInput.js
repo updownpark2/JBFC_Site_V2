@@ -12,6 +12,7 @@ export default function SignUpInput({ checkDuplicateID }) {
   return (
     <div>
       <form>
+        <input placeholder="이름" />
         <input placeholder="ID" />
         <input placeholder="PW" />
         <button onClick={checkDuplicateID}>중복검사</button>
