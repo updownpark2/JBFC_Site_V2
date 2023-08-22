@@ -21,7 +21,7 @@ export default class checkInputValid {
   }
   // 특수문자가 포함되어있는지를 check하는 함수
   #checkSpecialChars(input) {
-    const specialPattern = /[`~!,.@#$%^&*|\\\'\";:\/?]/gi;
+    const specialPattern = /[^가-힣\w\s]|_/g;
     if (specialPattern.test(input)) {
       return true;
     }
