@@ -10,8 +10,18 @@ export default function LoginHome() {
     const PW = event.currentTarget[1].value;
     // ID와 PW의 타당성을 검증함
     const logincheckvaild = new LoginCheckValid(ID, PW);
+    // try catch를 여기서 해야할듯
+    try {
+      logincheckvaild.checkId();
+      logincheckvaild.checkPw();
+      //통과하면 여기서부터 실행됨 => 서버에 ID PW넘겨주고 일치불일치를 찾아야함
+      console.log("통과");
 
-    logincheckvaild.checkId();
+      //여기서 DB에 있는 정보인지를 판단함
+    } catch (error) {
+      // error가 존재한다면 alert로 메세지를 보냄
+      alert(error.message);
+    }
   };
 
   return (
