@@ -14,7 +14,7 @@ export default function LoginHome() {
     const ID = event.currentTarget[0].value;
     const PW = event.currentTarget[1].value;
     // ID와 PW의 타당성을 검증함
-    const checkvalid = new checkInputValid(null, ID, PW);
+    const checkvalid = new checkInputValid(null, ID, PW, null, null);
 
     // try catch를 여기서 해야할듯
     try {

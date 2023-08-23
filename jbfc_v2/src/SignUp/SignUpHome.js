@@ -10,7 +10,7 @@ export default function SignUpHome() {
     const PW = event.target.parentElement[3].value;
 
     // 생성자 함수로 타당성 검증 함수 가져옴
-    const checkinputvalid = new checkInputValid(Name, ID, PW);
+    const checkinputvalid = new checkInputValid(Name, ID, PW, null, null);
     // 여기서 try catch문으로 ID,PW검증
     try {
       checkinputvalid.checkName();
