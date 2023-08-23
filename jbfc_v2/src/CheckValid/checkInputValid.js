@@ -47,7 +47,7 @@ export default class checkInputValid {
       throw new Error("이름에 입력값이 없습니다.");
     }
     if (this.#checkSpecialChars(this.Name)) {
-      throw new Error("ID에는 특수문자가 포함될 수 없습니다.");
+      throw new Error("이름에는 특수문자, 초성만 포함될 수 없습니다.");
     }
   }
 
@@ -75,6 +75,27 @@ export default class checkInputValid {
     }
     if (this.#checkNothingInput(this.PW)) {
       throw new Error("PW에 입력값이 없습니다.");
+    }
+  }
+
+  checkNickName() {
+    if (this.#checkBlank(this.Name)) {
+      throw new Error("닉네임에 공백이 존재합니다.");
+    }
+    if (this.#checkNothingInput(this.Name)) {
+      throw new Error("닉네임에 입력값이 없습니다.");
+    }
+    if (this.#checkSpecialChars(this.Name)) {
+      throw new Error("이름에는 특수문자, 초성만 포함될 수 없습니다.");
+    }
+  }
+  //PW가 아닌 back넘버가 들어가지만 매개변수를 추가하지 않고 BackNum 대신 사용
+  checkBackNum() {
+    if (this.#checkBlank(this.PW)) {
+      throw new Error("등번호에 공백이 존재합니다.");
+    }
+    if (this.#checkNothingInput(this.PW)) {
+      throw new Error("등번호에 입력값이 없습니다.");
     }
   }
 }
