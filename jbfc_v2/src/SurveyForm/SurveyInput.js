@@ -1,5 +1,12 @@
-// 로그인이 성공했는데 첫 방문일때!
+import avatarImage1 from "../img/avatar_1.png";
+import avatarImage2 from "../img/avatar_2.png";
+import avatarImage3 from "../img/avatar_3.png";
+import avatarImage4 from "../img/avatar_4.png";
+import avatarImage5 from "../img/avatar_5.png";
+import avatarImage6 from "../img/avatar_6.png";
+// ...
 
+// 로그인이 성공했는데 첫 방문일때!
 // 즉 닉네임에 대한 정보가 DB에 없을때 이 컴포넌트를 rendering
 export default function SurveyInput({ validateUserInput }) {
   // checkbox에 1개씩만 check하도록 하는 함수
@@ -68,6 +75,12 @@ export default function SurveyInput({ validateUserInput }) {
           onInput={numberMaxLength}
         />
         <br />
+        <img style={{ height: "50px", width: "50px" }} src={avatarImage1}></img>
+        <img style={{ height: "50px", width: "50px" }} src={avatarImage2}></img>
+        <img style={{ height: "50px", width: "50px" }} src={avatarImage3}></img>
+        <img style={{ height: "50px", width: "50px" }} src={avatarImage4}></img>
+        <img style={{ height: "50px", width: "50px" }} src={avatarImage5}></img>
+        <img style={{ height: "50px", width: "50px" }} src={avatarImage6}></img>
         <button>제출</button>
       </form>
     </div>
