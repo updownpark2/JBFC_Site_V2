@@ -1,8 +1,10 @@
 export default class checkInputValid {
-  constructor(Name, ID, PW) {
+  constructor(Name, ID, PW, NickName, BackNum) {
     this.Name = Name;
     this.ID = ID;
     this.PW = PW;
+    this.NickName = NickName;
+    this.BackNum = BackNum;
   }
   // 공백을 Check하는 함수
   #checkBlank(input) {
@@ -38,6 +40,14 @@ export default class checkInputValid {
     return false;
   }
   //Name을 Check하는 함수
+
+  #checkHasNumber(input) {
+    const hasNumber = /^[0-9]*$/;
+    if (hasNumber.test(input)) {
+      return true;
+    }
+    return false;
+  }
 
   checkName() {
     if (this.#checkBlank(this.Name)) {
@@ -79,23 +89,37 @@ export default class checkInputValid {
   }
 
   checkNickName() {
-    if (this.#checkBlank(this.Name)) {
+    if (this.#checkHasNumber(this.NickName)) {
+      throw new Error("닉네임에 숫자는 포함될 수 없습니다.");
+    }
+    if (this.#checkBlank(this.NickName)) {
       throw new Error("닉네임에 공백이 존재합니다.");
     }
-    if (this.#checkNothingInput(this.Name)) {
+    if (this.#checkNothingInput(this.NickName)) {
       throw new Error("닉네임에 입력값이 없습니다.");
     }
-    if (this.#checkSpecialChars(this.Name)) {
+    if (this.#checkSpecialChars(this.NickName)) {
       throw new Error("이름에는 특수문자, 초성만 포함될 수 없습니다.");
     }
+    return this.NickName;
   }
   //PW가 아닌 back넘버가 들어가지만 매개변수를 추가하지 않고 BackNum 대신 사용
   checkBackNum() {
-    if (this.#checkBlank(this.PW)) {
+    if (this.#checkBlank(this.BackNum)) {
       throw new Error("등번호에 공백이 존재합니다.");
     }
-    if (this.#checkNothingInput(this.PW)) {
+    if (this.#checkNothingInput(this.BackNum)) {
       throw new Error("등번호에 입력값이 없습니다.");
     }
+    return this.BackNum;
+  }
+  checkPosition(event) {
+    // 선택하지 않은 Position이 있다면 에러를날림
+    for (let i = 1; i <= 5; i++) {
+      if (event.target[i].checked) {
+        return i;
+      }
+    }
+    throw new Error("적어도 한개의 포지션을 선택해주세요.");
   }
 }
