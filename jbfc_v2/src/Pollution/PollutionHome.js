@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect } from "react";
+import PollutionProcessor from "./PollutionProcessor.js";
 
 export default function PollutionHome() {
   const callPollutionAPI = async () => {
@@ -21,9 +22,11 @@ export default function PollutionHome() {
   const getPollutionData = async () => {
     try {
       const pollutionData = await callPollutionAPI();
-      console.log(pollutionData);
+      const [pm10Value, pm25Value, pm10Grade, pm25Grade] =
+        PollutionProcessor(pollutionData);
       //여기서 이제 pollutionModel로 보내서 데이터 가공후에
       // 받아서 뿌리면된다.
+      console.log(pm10Value, pm25Value, pm10Grade, pm25Grade);
     } catch (error) {
       alert(error);
       // 실패한다면 해당 에러 메세지를 가져와 던진다.
