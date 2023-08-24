@@ -1,4 +1,6 @@
 import axios from "axios";
+import { useEffect } from "react";
+import WeatherProcessor from "./WeatherProcessor";
 
 export default function WeatherHome() {
   //여기서 API를 호출해서
@@ -27,12 +29,12 @@ export default function WeatherHome() {
   const callWeatherAPI = async (lat, lon) => {
     try {
       const weatherData = await axios.get(
-        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=07412e5439fdfff8f24192913471de2f`
+        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=07412e5439fdfff8f24192913471de2f`
       );
       return weatherData.data.list;
       // 데이터를 가져오는데 성공하면 날씨 데이터를 return
     } catch (error) {
-      alert("날씨 정보를 가져오는데 실패했습니다.");
+      alert("날씨정보를 가져오는데 실패했습니다. 위치정보에 동의해주세요.");
       // 데이터를 가져오는데 실패하면 alert를 통해 알림
     }
   };
@@ -41,14 +43,20 @@ export default function WeatherHome() {
     try {
       const [lat, lon] = await callGeolocationAPI();
       const weatherData = await callWeatherAPI(lat, lon);
-      console.log(weatherData);
+      const weatherprocessor = new WeatherProcessor(weatherData);
+      //여기서 이제 weather model로내서 데이터 가공후에
+      const [readableTime, morningEveningNight] =
+        weatherprocessor.getProcessedTimeData();
+      // 받아서 뿌리면된다.
+      console.log(readableTime, morningEveningNight);
     } catch (error) {
       alert(error);
       // 실패한다면 해당 에러 메세지를 가져와 던진다.
     }
   };
-
-  getWeatherData();
+  useEffect(() => {
+    getWeatherData();
+  }, []);
 
   return <div>날씨보여주는곳</div>;
 }
