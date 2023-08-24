@@ -1,3 +1,4 @@
+import PollutionHome from "./Pollution/PollutionHome.js";
 import WeatherHome from "./Weather/WeatherHome.js";
 
 export default function Home() {
@@ -6,6 +7,7 @@ export default function Home() {
     <div>
       Home!
       <WeatherHome />
+      <PollutionHome />
     </div>
   );
 }
