@@ -1,6 +1,10 @@
 import { useState } from "react";
 
-export default function SignUpInput({ validateUserInput, checkDuplicateID }) {
+export default function SignUpInput({
+  validateUserInput,
+  checkDuplicateID,
+  idExist,
+}) {
   const [passwordVisible, setPasswordVisible] = useState(true);
 
   const togglePasswordVisibility = (event) => {
@@ -12,7 +16,15 @@ export default function SignUpInput({ validateUserInput, checkDuplicateID }) {
       <form>
         <input placeholder="이름" maxLength="10" />
         <br />
-        <input placeholder="ID" maxLength="10" />
+        <input
+          placeholder="ID"
+          maxLength="10"
+          style={
+            idExist === true
+              ? { border: "1.5px red solid" }
+              : { border: "1.5px green solid" }
+          }
+        />
         <button type="button" onClick={checkDuplicateID}>
           중복확인
         </button>
