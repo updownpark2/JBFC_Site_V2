@@ -3,9 +3,11 @@ import checkInputValid from "../CheckValid/checkInputValid.js";
 import SignUpInput from "./SignUpInput.js";
 import { useState } from "react";
 import SignUpModel from "./SignUpModel.js";
+import { useNavigate } from "react-router-dom";
 
 export default function SignUpHome() {
   const [idExist, setIdExist] = useState(null);
+  const navigate = useNavigate();
 
   const validateUserInput = (event) => {
     event.preventDefault();
@@ -22,6 +24,12 @@ export default function SignUpHome() {
       checkinputvalid.checkId();
       checkinputvalid.checkPw();
       //성공 시 함수 이곳에 실행
+      const signupmodel = new SignUpModel(ID, PW, Name);
+
+      signupmodel.signUpIfValidCredentials(idExist);
+      const goToHome = () => navigate(`/home`);
+      goToHome();
+      // 중복검사했는지에 따라서
       //DB와 비교하는 함수가 들어와야함
     } catch (error) {
       alert(error.message);
@@ -39,6 +47,11 @@ export default function SignUpHome() {
     //useState를 사용해서 View에게 데이터를 넘길준비를 함
     setIdExist(idExist);
     //이걸 view로 보내서 조절
+
+    //여기서 idExist를 받아서 회원가입이 가능하고 불가능하고를 조절
+    //null => id 중복검사를 해주세요.
+    //true => 중복된 id가 있습니다.
+    //false => 회원가입 성공 및 login page로.
   };
   return (
     <div>

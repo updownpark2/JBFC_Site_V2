@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default class SignUpModel {
   #idExist;
@@ -25,5 +26,27 @@ export default class SignUpModel {
     await this.#findIdInMongoDB();
 
     return this.#idExist;
+  }
+
+  #insertIdInMongoDB() {
+    axios.post(`http://localhost:8080/insertUserInfo`, {
+      userId: this.userId,
+      userPw: this.userPw,
+      userName: this.userName,
+    });
+  }
+
+  signUpIfValidCredentials(idExist) {
+    if (idExist === null) {
+      throw new Error("id 중복검사를 실행해주세요,");
+    }
+    if (idExist === true) {
+      throw new Error("중복된 id 입니다.");
+    }
+    if (idExist === false) {
+      //db랑연결해서 데이터 넣기까지
+
+      this.#insertIdInMongoDB();
+    }
   }
 }
