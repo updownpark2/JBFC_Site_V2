@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import LoginInput from "./LoginInput.js";
 import checkInputValid from "../CheckValid/checkInputValid.js";
+import LoginModel from "./LoginModel.js";
 
 export default function LoginHome() {
   // URL간 이동을 위해 React Hook 사용
@@ -21,7 +22,8 @@ export default function LoginHome() {
       checkvalid.checkId();
       checkvalid.checkPw();
       //통과하면 여기서부터 실행됨 => 서버에 ID PW넘겨주고 일치불일치를 찾아야함
-      //
+      const loginmodel = new LoginModel(ID, PW);
+      loginmodel.ExistIdPwInDB();
       goToHome();
       //여기서 DB에 있는 정보인지를 판단함
       //판단하고 만약 play type이 정해져있지 않다면 설문 페이지를 rendering
