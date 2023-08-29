@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 export default class SignUpModel {
   #idExist;
 
-  constructor(userId, userName, userPw) {
-    this.userId = userId;
+  constructor(userName, userId, userPw) {
     this.userName = userName;
+    this.userId = userId;
     this.userPw = userPw;
   }
 

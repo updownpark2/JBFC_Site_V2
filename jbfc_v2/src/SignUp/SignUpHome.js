@@ -12,6 +12,7 @@ export default function SignUpHome() {
   const validateUserInput = (event) => {
     event.preventDefault();
     // Name ,ID, PW정보를 가져온 후
+    console.dir(event.target);
     const Name = event.target.parentElement[0].value;
     const ID = event.target.parentElement[1].value;
     const PW = event.target.parentElement[3].value;
@@ -24,9 +25,10 @@ export default function SignUpHome() {
       checkinputvalid.checkId();
       checkinputvalid.checkPw();
       //성공 시 함수 이곳에 실행
-      const signupmodel = new SignUpModel(ID, PW, Name);
+      const signupmodel = new SignUpModel(Name, ID, PW);
 
       signupmodel.signUpIfValidCredentials(idExist);
+
       const goToHome = () => navigate(`/home`);
       goToHome();
       // 중복검사했는지에 따라서
