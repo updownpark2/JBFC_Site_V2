@@ -17,6 +17,16 @@ export default class LoginModel {
         userPw: this.PW,
       }
     );
-    console.log(postCandidateIdPw.data);
+    const ExistIdPw = await postCandidateIdPw.data;
+
+    return ExistIdPw;
+  }
+  async login() {
+    const resultLogin = await axios.post(`http://localhost:8080/login`, {
+      userId: this.ID,
+      userPw: this.PW,
+    });
+
+    return resultLogin;
   }
 }

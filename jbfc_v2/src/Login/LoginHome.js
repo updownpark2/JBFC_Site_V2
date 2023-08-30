@@ -9,7 +9,7 @@ export default function LoginHome() {
 
   const goToHome = () => navigate(`/home`);
   //LoginInput와 관련된 Submit
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
     //ID, PW를 가져옴
     const ID = event.currentTarget[0].value;
@@ -23,8 +23,8 @@ export default function LoginHome() {
       checkvalid.checkPw();
       //통과하면 여기서부터 실행됨 => 서버에 ID PW넘겨주고 일치불일치를 찾아야함
       const loginmodel = new LoginModel(ID, PW);
-      loginmodel.ExistIdPwInDB();
-      goToHome();
+      const loginResult = await loginmodel.login();
+      console.log(loginResult);
       //여기서 DB에 있는 정보인지를 판단함
       //판단하고 만약 play type이 정해져있지 않다면 설문 페이지를 rendering
     } catch (error) {
