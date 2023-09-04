@@ -22,20 +22,23 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // 세팅끝
-
-const MongoClient = require(`mongodb`).MongoClient;
-app.use(express.urlencoded({ extended: true }));
-
 let db;
 
-MongoClient.connect(
-  `mongodb+srv://tkdgk1996:Tznk2F57VolxQbYk@cluster0.tj8yoah.mongodb.net/?retryWrites=true&w=majority`
-  //db접속되면 여기 아래 함수 실행시켜줘
-).then((client) => {
-  db = client.db(`JBV2`);
-});
+const connectMongoDB = async () => {
+  const MongoClient = require(`mongodb`).MongoClient;
+  app.use(express.urlencoded({ extended: true }));
 
-app.listen(8080, () => console.log("연결"));
+  await MongoClient.connect(
+    `mongodb+srv://tkdgk1996:Tznk2F57VolxQbYk@cluster0.tj8yoah.mongodb.net/?retryWrites=true&w=majority`
+    //db접속되면 여기 아래 함수 실행시켜줘
+  ).then((client) => {
+    db = client.db(`JBV2`);
+    app.listen(8080, () => console.log("연결"));
+  });
+};
+
+connectMongoDB();
+
 // 8080 포트로 접근하면 연결해줘라
 
 // DB에 해당 ID가 있는지 check하고 없다면 false를 있다면 true를 return하는함수
@@ -142,4 +145,39 @@ passport.serializeUser((userInfo, done) => {
 });
 passport.deserializeUser((userId, done) => {
   done(null, userInfo.userId);
+});
+
+// 나중에 userId대신 userNickName 으로 또 프로필사진까지
+const insertBoardInMongoDB = async (title, text, month, day, userId) => {
+  await db.collection(`board`).insertOne(
+    {
+      title: title,
+      text: text,
+      month: month,
+      day: day,
+      userId: userId,
+    },
+    (error, req) => console.log("저장")
+  );
+};
+
+app.post(`/insertBoard`, async (req, res) => {
+  const title = req.body.title;
+  const text = req.body.text;
+  const month = req.body.month;
+  const day = req.body.day;
+  const userId = req.body.userId;
+
+  await insertBoardInMongoDB(title, text, month, day, userId);
+  res.send(`저장끝`);
+});
+
+const getBoardData = async () => {
+  const boardData = await db.collection(`board`).find({}).toArray();
+  return boardData;
+};
+
+app.get(`/getBoardData`, async (req, res) => {
+  const boardData = await getBoardData();
+  res.send(boardData);
 });
