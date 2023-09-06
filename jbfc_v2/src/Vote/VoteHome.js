@@ -1,3 +1,4 @@
+import axios from "axios";
 import checkInputValid from "../CheckValid/checkInputValid";
 import VoteInput from "./VoteInput";
 
@@ -28,6 +29,20 @@ export default function VoteHome() {
     }
   };
 
+  const insertVoteDataInDB = async (
+    voteDate,
+    voteTitle,
+    voteTextBoxArr,
+    voteCheckBoxArr
+  ) => {
+    await axios.post(`http://localhost:8080/insertVoteData`, {
+      voteDate: voteDate,
+      voteTitle: voteTitle,
+      voteTextBoxArr: voteTextBoxArr,
+      voteCheckBoxArr: voteCheckBoxArr,
+    });
+  };
+
   // input에서 vote Data를 받아옴
   const sendVoteData = (event) => {
     event.preventDefault();
@@ -42,9 +57,8 @@ export default function VoteHome() {
 
     //타당성검사
     checkVoteValid(voteTitle, voteTextBoxArr);
-
-    // 여기서 타당성 검사 => Title이 비진않았는지 내용이 비진않았는지
-    console.log(voteDate, voteTitle, voteTextBoxArr, voteCheckBoxArr);
+    insertVoteDataInDB(voteDate, voteTitle, voteTextBoxArr, voteCheckBoxArr);
+    // 여기서 DB에 저장
   };
   return (
     <div>

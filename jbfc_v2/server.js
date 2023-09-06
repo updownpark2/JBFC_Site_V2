@@ -125,7 +125,6 @@ passport.use(
       const ExistId = await db
         .collection("userInfo")
         .findOne({ userId: req.body.userId });
-      console.log(ExistId);
       if (ExistId === null) {
         return done(null, false, { message: "존재하지않는 아이디" });
       }
@@ -180,4 +179,21 @@ const getBoardData = async () => {
 app.get(`/getBoardData`, async (req, res) => {
   const boardData = await getBoardData();
   res.send(boardData);
+});
+
+app.post(`/insertVoteData`, (req, res) => {
+  const votedDate = req.body.voteDate;
+  const voteTitle = req.body.voteTitle;
+  const voteTextBoxArr = req.body.voteTextBoxArr;
+  const voteCheckBoxArr = req.body.voteCheckBoxArr;
+
+  db.collection(`vote`).insertOne(
+    {
+      votedDate: votedDate,
+      voteTitle: voteTitle,
+      voteTextBoxArr: voteTextBoxArr,
+      voteCheckBoxArr: voteCheckBoxArr,
+    },
+    (error, req) => console.log("저장")
+  );
 });
