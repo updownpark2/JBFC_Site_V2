@@ -4,12 +4,15 @@ import VoteInput from "./VoteInput";
 import VoteOutput from "./VoteOutput";
 import ReactModal from "react-modal";
 import { useEffect, useState } from "react";
+import VoteInputDetail from "./VoteInputDetail";
 
 export default function VoteHome() {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [inputModalOpen, setInputModalOpen] = useState(false);
+  console.log(inputModalOpen);
+  const [inputDetailModalOpen, setInputDetailModalOpen] = useState(false);
   const [voteData, setVoteData] = useState(null);
   // voteOption을 찾아서 해당 value를 arr에 저장
-
+  const [voteDataDetail, setVoteDataDetail] = useState(null);
   const getVoteData = async () => {
     const voteData = await axios.get(`http://localhost:8080/getVoteData`);
     setVoteData(voteData.data);
@@ -62,8 +65,11 @@ export default function VoteHome() {
   };
 
   //modal을 키고 끌 수 있는 함수
-  const modalToggle = () => {
-    setModalOpen((current) => !current);
+  const inputModalToggle = () => {
+    setInputModalOpen((current) => !current);
+  };
+  const inputDetailModalToggle = () => {
+    setInputDetailModalOpen((current) => !current);
   };
 
   // input에서 vote Data를 받아옴
@@ -86,21 +92,49 @@ export default function VoteHome() {
       voteTextBoxArr,
       voteCheckBoxArr
     );
-    modalToggle();
+    inputModalToggle();
     // 여기서 DB에 저장
   };
 
   // DB에서 voteData를 가져오는함수
 
+  const getDetailVoteData = async (detailVoteDataId) => {
+    const detailVoteData = await axios.post(
+      `http://localhost:8080/getDetailVoteData`,
+      { _id: detailVoteDataId }
+    );
+    return detailVoteData.data;
+  };
+
+  const goToDetailPage = async (e) => {
+    //여기의 data를 가지고 다시 보내주자 input에게
+    const detailVoteDataId = e.target.id;
+    //id가져왔으니까 이걸로 다시 서버와 통신해서 가져와야함
+    const detailVoteData = await getDetailVoteData(detailVoteDataId);
+    setVoteDataDetail(detailVoteData);
+    inputDetailModalToggle();
+
+    //여기서 모달을 켬
+  };
+
   return (
     <div>
       <h1>풋살 날짜 투표</h1>
-      <VoteOutput voteData={voteData} />
-      <button type="button" onClick={modalToggle}>
+      <VoteOutput voteData={voteData} goToDetailPage={goToDetailPage} />
+      <button type="button" onClick={inputModalToggle}>
         투표 만들기
       </button>
-      <ReactModal isOpen={modalOpen} ariaHideApp={false}>
-        <VoteInput sendVoteData={sendVoteData} modalToggle={modalToggle} />
+      <ReactModal isOpen={inputModalOpen} ariaHideApp={false}>
+        <VoteInput
+          sendVoteData={sendVoteData}
+          inputModalToggle={inputModalToggle}
+        />
+      </ReactModal>
+      <ReactModal isOpen={inputDetailModalOpen} ariaHideApp={false}>
+        <VoteInputDetail
+          voteDataDetail={voteDataDetail}
+          inputDetailModalToggle={inputDetailModalToggle}
+        />
       </ReactModal>
     </div>
   );

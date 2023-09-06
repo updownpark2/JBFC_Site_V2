@@ -3,7 +3,7 @@ import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { ko } from "date-fns/esm/locale";
 
-export default function VoteInput({ sendVoteData, modalToggle }) {
+export default function VoteInput({ sendVoteData, inputModalToggle }) {
   // React-datepicker 라이브러리 사용을 위해 useState사용
   const [startDate, setStartDate] = useState(new Date());
 
@@ -62,8 +62,10 @@ export default function VoteInput({ sendVoteData, modalToggle }) {
         <br />
         <input type="checkbox" name="익명투표" className="checkBox" /> 익명투표
         <br />
+        <button onClick={inputModalToggle} type="button">
+          ❌
+        </button>
         <button>생성</button>
-        <button onClick={modalToggle}>❌</button>
       </form>
     </div>
   );
