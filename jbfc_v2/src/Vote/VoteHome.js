@@ -1,11 +1,12 @@
+import checkInputValid from "../CheckValid/checkInputValid";
 import VoteInput from "./VoteInput";
 
 export default function VoteHome() {
   // voteOption을 찾아서 해당 value를 arr에 저장
-  const pushVoteOption = (event, voteOptionArr) => {
+  const pushVoteTextBoxArr = (event, voteTextBoxArr) => {
     for (let i = 2; i < event.target.length; i++) {
       if (event.target[i].className === "voteOption") {
-        voteOptionArr.push(event.target[i].value);
+        voteTextBoxArr.push(event.target[i].value);
       }
     }
   };
@@ -17,6 +18,15 @@ export default function VoteHome() {
       }
     }
   };
+  const checkVoteValid = (title, textArr) => {
+    const checkinputvaild = new checkInputValid(null, null, null, null, null);
+    try {
+      checkinputvaild.checkVoteTitle(title);
+      checkinputvaild.checkVoteText(textArr);
+    } catch (error) {
+      alert(error);
+    }
+  };
 
   // input에서 vote Data를 받아옴
   const sendVoteData = (event) => {
@@ -25,12 +35,16 @@ export default function VoteHome() {
     //여기서 이제 데이터 받아서 DB에 저장하고 outPut에뿌리면된다.
     const voteDate = event.target[0].value;
     const voteTitle = event.target[1].value;
-    const voteOptionArr = [];
+    const voteTextBoxArr = [];
     const voteCheckBoxArr = [];
-    pushVoteOption(event, voteOptionArr);
+    pushVoteTextBoxArr(event, voteTextBoxArr);
     pushVoteCheckBoxArr(event, voteCheckBoxArr);
 
-    console.log(voteDate, voteTitle, voteOptionArr, voteCheckBoxArr);
+    //타당성검사
+    checkVoteValid(voteTitle, voteTextBoxArr);
+
+    // 여기서 타당성 검사 => Title이 비진않았는지 내용이 비진않았는지
+    console.log(voteDate, voteTitle, voteTextBoxArr, voteCheckBoxArr);
   };
   return (
     <div>

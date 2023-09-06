@@ -89,9 +89,6 @@ export default class checkInputValid {
   }
 
   checkNickName() {
-    if (this.#checkHasNumber(this.NickName)) {
-      throw new Error("닉네임에 숫자는 포함될 수 없습니다.");
-    }
     if (this.#checkBlank(this.NickName)) {
       throw new Error("닉네임에 공백이 존재합니다.");
     }
@@ -100,6 +97,9 @@ export default class checkInputValid {
     }
     if (this.#checkSpecialChars(this.NickName)) {
       throw new Error("이름에는 특수문자, 초성만 포함될 수 없습니다.");
+    }
+    if (this.#checkHasNumber(this.NickName)) {
+      throw new Error("닉네임에 숫자는 포함될 수 없습니다.");
     }
     return this.NickName;
   }
@@ -121,5 +121,17 @@ export default class checkInputValid {
       }
     }
     throw new Error("적어도 한개의 포지션을 선택해주세요.");
+  }
+  checkVoteTitle(title) {
+    if (title.length === 0) {
+      throw new Error(`투표 제목이 공백입니다.`);
+    }
+  }
+  checkVoteText(textArr) {
+    for (let i = 0; i < textArr.length; i++) {
+      if (textArr[i] === ``) {
+        throw new Error(`투표 내용에 공백이 있습니다.`);
+      }
+    }
   }
 }
