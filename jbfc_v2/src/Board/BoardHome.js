@@ -13,9 +13,10 @@ export default function BoardHome() {
   const getBoardDataApi = async () => {
     //collection에 있는 거 다 가져오고싶으면?
     let boardData = sliceBoardData(
-      (await axios.get(`http://localhost:8080/getBoardData`)).data
+      await axios.get(`http://localhost:8080/getBoardData`)
     );
     //9개까지만 자름
+
     setBoardData(boardData);
   };
   //함수명 변경필요

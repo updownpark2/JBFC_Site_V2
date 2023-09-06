@@ -3,12 +3,23 @@ import checkInputValid from "../CheckValid/checkInputValid";
 import VoteInput from "./VoteInput";
 import VoteOutput from "./VoteOutput";
 import ReactModal from "react-modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function VoteHome() {
   const [modalOpen, setModalOpen] = useState(false);
-
+  const [voteData, setVoteData] = useState(null);
   // voteOption을 찾아서 해당 value를 arr에 저장
+
+  const getVoteData = async () => {
+    const voteData = await axios.get(`http://localhost:8080/getVoteData`);
+    setVoteData(voteData.data);
+  };
+
+  useEffect(() => {
+    getVoteData();
+  }, []);
+  //최초 1회 voteData를 가져옴
+
   const pushVoteTextBoxArr = (event, voteTextBoxArr) => {
     for (let i = 2; i < event.target.length; i++) {
       if (event.target[i].className === "voteOption") {
@@ -46,6 +57,8 @@ export default function VoteHome() {
       voteTextBoxArr: voteTextBoxArr,
       voteCheckBoxArr: voteCheckBoxArr,
     });
+    // 저장하고 나면? votedata를 새롭게 업데이트해서 가져옴
+    getVoteData();
   };
 
   //modal을 키고 끌 수 있는 함수
@@ -77,10 +90,12 @@ export default function VoteHome() {
     // 여기서 DB에 저장
   };
 
+  // DB에서 voteData를 가져오는함수
+
   return (
     <div>
       <h1>풋살 날짜 투표</h1>
-      <VoteOutput />
+      <VoteOutput voteData={voteData} />
       <button type="button" onClick={modalToggle}>
         투표 만들기
       </button>

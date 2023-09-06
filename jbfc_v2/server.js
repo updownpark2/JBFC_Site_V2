@@ -195,3 +195,8 @@ app.post(`/insertVoteData`, (req, res) => {
   });
   res.send(`성공`);
 });
+
+app.get(`/getVoteData`, async (req, res) => {
+  const voteData = await db.collection(`vote`).find({}).toArray();
+  res.send(voteData);
+});
