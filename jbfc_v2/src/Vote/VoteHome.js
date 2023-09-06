@@ -1,8 +1,13 @@
 import axios from "axios";
 import checkInputValid from "../CheckValid/checkInputValid";
 import VoteInput from "./VoteInput";
+import VoteOutput from "./VoteOutput";
+import ReactModal from "react-modal";
+import { useState } from "react";
 
 export default function VoteHome() {
+  const [modalOpen, setModalOpen] = useState(false);
+
   // voteOption을 찾아서 해당 value를 arr에 저장
   const pushVoteTextBoxArr = (event, voteTextBoxArr) => {
     for (let i = 2; i < event.target.length; i++) {
@@ -43,8 +48,13 @@ export default function VoteHome() {
     });
   };
 
+  //modal을 키고 끌 수 있는 함수
+  const modalToggle = () => {
+    setModalOpen((current) => !current);
+  };
+
   // input에서 vote Data를 받아옴
-  const sendVoteData = (event) => {
+  const sendVoteData = async (event) => {
     event.preventDefault();
 
     //여기서 이제 데이터 받아서 DB에 저장하고 outPut에뿌리면된다.
@@ -57,13 +67,26 @@ export default function VoteHome() {
 
     //타당성검사
     checkVoteValid(voteTitle, voteTextBoxArr);
-    insertVoteDataInDB(voteDate, voteTitle, voteTextBoxArr, voteCheckBoxArr);
+    await insertVoteDataInDB(
+      voteDate,
+      voteTitle,
+      voteTextBoxArr,
+      voteCheckBoxArr
+    );
+    modalToggle();
     // 여기서 DB에 저장
   };
+
   return (
     <div>
       <h1>풋살 날짜 투표</h1>
-      <VoteInput sendVoteData={sendVoteData} />
+      <VoteOutput />
+      <button type="button" onClick={modalToggle}>
+        투표 만들기
+      </button>
+      <ReactModal isOpen={modalOpen} ariaHideApp={false}>
+        <VoteInput sendVoteData={sendVoteData} modalToggle={modalToggle} />
+      </ReactModal>
     </div>
   );
 }

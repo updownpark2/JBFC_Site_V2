@@ -187,13 +187,11 @@ app.post(`/insertVoteData`, (req, res) => {
   const voteTextBoxArr = req.body.voteTextBoxArr;
   const voteCheckBoxArr = req.body.voteCheckBoxArr;
 
-  db.collection(`vote`).insertOne(
-    {
-      votedDate: votedDate,
-      voteTitle: voteTitle,
-      voteTextBoxArr: voteTextBoxArr,
-      voteCheckBoxArr: voteCheckBoxArr,
-    },
-    (error, req) => console.log("저장")
-  );
+  db.collection(`vote`).insertOne({
+    votedDate: votedDate,
+    voteTitle: voteTitle,
+    voteTextBoxArr: voteTextBoxArr,
+    voteCheckBoxArr: voteCheckBoxArr,
+  });
+  res.send(`성공`);
 });
