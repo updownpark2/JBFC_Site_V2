@@ -44,7 +44,7 @@ export default function VoteHome() {
       checkinputvaild.checkVoteTitle(title);
       checkinputvaild.checkVoteText(textArr);
     } catch (error) {
-      alert(error);
+      throw new Error(error);
     }
   };
 
@@ -85,14 +85,21 @@ export default function VoteHome() {
     pushVoteCheckBoxArr(event, voteCheckBoxArr);
 
     //타당성검사
-    checkVoteValid(voteTitle, voteTextBoxArr);
-    await insertVoteDataInDB(
-      voteDate,
-      voteTitle,
-      voteTextBoxArr,
-      voteCheckBoxArr
-    );
-    inputModalToggle();
+    try {
+      checkVoteValid(voteTitle, voteTextBoxArr);
+      await insertVoteDataInDB(
+        voteDate,
+        voteTitle,
+        voteTextBoxArr,
+        voteCheckBoxArr
+      );
+      inputModalToggle();
+    } catch (error) {
+      alert(error);
+    }
+
+    // 타당성검사를 통과해야 다음 DB가 저장되어야하는 부분 수정필요
+
     // 여기서 DB에 저장
   };
 
