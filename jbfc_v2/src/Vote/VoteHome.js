@@ -8,9 +8,12 @@ import VoteInputDetail from "./VoteInputDetail";
 
 export default function VoteHome() {
   const [inputModalOpen, setInputModalOpen] = useState(false);
-  console.log(inputModalOpen);
   const [inputDetailModalOpen, setInputDetailModalOpen] = useState(false);
   const [voteData, setVoteData] = useState(null);
+  const [detailVoteId, setDetailVoteId] = useState(null);
+  const [anonymousVoting, setAnonymousVoting] = useState(false);
+  //detailVoteId는 해당 Vote 글의 ID를 저장하는 변수
+
   // voteOption을 찾아서 해당 value를 arr에 저장
   const [voteDataDetail, setVoteDataDetail] = useState(null);
   const getVoteData = async () => {
@@ -87,6 +90,7 @@ export default function VoteHome() {
     //타당성검사
     try {
       checkVoteValid(voteTitle, voteTextBoxArr);
+      //checkVoteValid 통과하면 DB에 저장함
       await insertVoteDataInDB(
         voteDate,
         voteTitle,
@@ -116,12 +120,59 @@ export default function VoteHome() {
   const goToDetailPage = async (e) => {
     //여기의 data를 가지고 다시 보내주자 input에게
     const detailVoteDataId = e.target.id;
+
+    setDetailVoteId(detailVoteDataId);
+    // 여기서 vote글에 대한 data를
+
     //id가져왔으니까 이걸로 다시 서버와 통신해서 가져와야함
     const detailVoteData = await getDetailVoteData(detailVoteDataId);
+
+    //여기서 익명투표인지를 컴포넌트에서 알 수 있도록 함
+    const isAnonymous = detailVoteData.voteCheckBoxArr[0];
+    setAnonymousVoting(isAnonymous);
+
     setVoteDataDetail(detailVoteData);
     inputDetailModalToggle();
 
     //여기서 모달을 켬
+  };
+
+  //함수명 수정필요
+  const getCheckedData = (formData) => {
+    const inputData = [];
+    let index = 0;
+
+    while (formData[index].tagName !== "BUTTON") {
+      const checkedData = formData[index].checked;
+      inputData.push(checkedData);
+      index = index + 1;
+    }
+    return inputData;
+  };
+
+  const insertVoteDetailData = async (checkedData) => {
+    axios.post(`http://localhost:8080/insertVoteDetailData`, {
+      detailVoteId: detailVoteId,
+      checkedData: checkedData,
+      isAnonymous: anonymousVoting,
+    });
+  };
+
+  const voteDetail = (event) => {
+    //User가 투표를 하면 해당 정보를 DB에 저장해야함
+    event.preventDefault();
+    const formData = event.target.parentElement;
+    const checkedData = getCheckedData(formData);
+
+    try {
+      insertVoteDetailData(checkedData);
+      alert("성공!");
+      inputDetailModalToggle();
+    } catch (error) {
+      alert(error);
+    }
+
+    // 이걸 가지고 DB에 저장할 수 있다이제
   };
 
   return (
@@ -141,6 +192,7 @@ export default function VoteHome() {
         <VoteInputDetail
           voteDataDetail={voteDataDetail}
           inputDetailModalToggle={inputDetailModalToggle}
+          voteDetail={voteDetail}
         />
       </ReactModal>
     </div>

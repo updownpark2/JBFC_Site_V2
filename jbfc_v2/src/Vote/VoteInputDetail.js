@@ -3,13 +3,52 @@
 export default function VoteInputDetail({
   voteDataDetail,
   inputDetailModalToggle,
+  voteDetail,
+  reVote,
 }) {
   //여기서 받으면됨
-  console.log(voteDataDetail);
 
-  return (
+  const checkOnlyOne = (element) => {
+    const checkboxes = document.getElementsByName("text");
+
+    checkboxes.forEach((cb) => {
+      cb.checked = false;
+    });
+    element.target.checked = true;
+  };
+  const [voteMutiple, voteAnonymous] = voteDataDetail.voteCheckBoxArr;
+  const voteTitle = voteDataDetail.voteTitle;
+  const voteTextBoxArr = voteDataDetail.voteTextBoxArr;
+  const voteDate = voteDataDetail.votedDate;
+
+  //익명이면 ? 실시간 투표 안보이게 여기서 조절
+
+  return voteDataDetail === null ? (
     <div>
-      Detail
+      <h1>로딩중</h1>
+    </div>
+  ) : (
+    <div>
+      <h3>{voteTitle}</h3>
+      <span>날짜: {voteDate}</span>
+      <p>
+        {voteMutiple
+          ? "중복투표가 가능한 투표입니다."
+          : "중복 투표가 불가능한 투표입니다."}
+      </p>
+      <form>
+        {voteTextBoxArr.map((text, index) => (
+          <li key={index}>
+            {text}
+            <input
+              onClick={voteMutiple ? null : checkOnlyOne}
+              type="checkbox"
+              name="text"
+            />
+          </li>
+        ))}
+        <button onClick={voteDetail}>제출 😀</button>
+      </form>
       <button type="button" onClick={inputDetailModalToggle}>
         ❌
       </button>

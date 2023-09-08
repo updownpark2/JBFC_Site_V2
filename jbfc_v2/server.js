@@ -3,7 +3,6 @@ const cors = require(`cors`);
 const passport = require(`passport`);
 const LocalStrategy = require(`passport-local`).Strategy;
 const session = require(`express-session`);
-
 const app = express();
 
 app.use(cors({ origin: "http://localhost:3000" }));
@@ -11,6 +10,7 @@ app.use(cors({ origin: "http://localhost:3000" }));
 // 미들웨어 라고한다.
 
 const bodyParser = require(`body-parser`);
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -29,17 +29,19 @@ const connectMongoDB = async () => {
   app.use(express.urlencoded({ extended: true }));
 
   await MongoClient.connect(
-    `mongodb+srv://tkdgk1996:Tznk2F57VolxQbYk@cluster0.tj8yoah.mongodb.net/?retryWrites=true&w=majority`
+    `mongodb+srv://tkdgk1996:Tznk2F57VolxQbYk@cluster0.tj8yoah.mongodb.net/?retryWrites=true&w=majority`,
     //db접속되면 여기 아래 함수 실행시켜줘
+    { useUnifiedTopology: true }
   ).then((client) => {
     db = client.db(`JBV2`);
     app.listen(8080, () => console.log("연결"));
   });
 };
-
 connectMongoDB();
 
 // 8080 포트로 접근하면 연결해줘라
+
+const ObjectId = require("mongodb").ObjectId;
 
 // DB에 해당 ID가 있는지 check하고 없다면 false를 있다면 true를 return하는함수
 const findIdInMongoDB = async (candidateID) => {
@@ -196,7 +198,38 @@ app.post(`/insertVoteData`, (req, res) => {
   res.send(`성공`);
 });
 
+// voteData전부를 가져와주는 함수
 app.get(`/getVoteData`, async (req, res) => {
   const voteData = await db.collection(`vote`).find({}).toArray();
   res.send(voteData);
+});
+
+// detail한 voteData를 가져와주는 함수
+app.post(`/getDetailVoteData`, async (req, res) => {
+  const detailVoteData = await db
+    .collection(`vote`)
+    .findOne({ _id: ObjectId(req.body._id) });
+
+  res.send(detailVoteData);
+});
+
+const insertVoteDetailData = async (detailVoteId, checkedData, isAnonymous) => {
+  await db.collection(`voteDetail`).insertOne({
+    detailVoteId: detailVoteId,
+    checkedData: checkedData,
+    isAnonymous: isAnonymous,
+  });
+};
+
+app.post(`/insertVoteDetailData`, async (req, res) => {
+  const detailVoteId = req.body.detailVoteId;
+  const checkedData = req.body.checkedData;
+  const isAnonymous = req.body.isAnonymous;
+
+  try {
+    await insertVoteDetailData(detailVoteId, checkedData, isAnonymous);
+    res.send("성공");
+  } catch (error) {
+    throw new Error(error);
+  }
 });
