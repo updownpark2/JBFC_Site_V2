@@ -25,21 +25,9 @@ export default function LoginHome() {
     // loginResult에 따라 ID를 Recoil에 저장
   };
 
-  const findUserDetailInfo = async (userId) => {
-    const haveUserDetailInfo = await axios.post(
-      `http://localhost:8080/getUserDetailInfo`,
-      {
-        userId: userId,
-      }
-    );
-
-    return haveUserDetailInfo.data;
-  };
-
   const goHomeOrSurvey = async () => {
-    const haveUserDetailInfo = await findUserDetailInfo();
-
-    haveUserDetailInfo ? goToHome() : goToSurvey();
+    console.log(userIdRecoilState);
+    userIdRecoilState === null ? goToSurvey() : goToHome();
     // 있으면 home으로 없으면 설문조사하러
   };
 
@@ -60,6 +48,7 @@ export default function LoginHome() {
       const loginResult = (await loginmodel.login()).data;
 
       saveUserIdInRecoil(loginResult, ID);
+
       goHomeOrSurvey();
       //여기서 true면 userId를 recoil에 저장하자
 
