@@ -180,7 +180,6 @@ const getBoardData = async () => {
 
 app.get(`/getBoardData`, async (req, res) => {
   const boardData = await getBoardData();
-  res.send(boardData);
 });
 
 app.post(`/insertVoteData`, (req, res) => {
@@ -232,4 +231,15 @@ app.post(`/insertVoteDetailData`, async (req, res) => {
   } catch (error) {
     throw new Error(error);
   }
+});
+
+app.post(`/getUserDetailInfo`, async (req, res) => {
+  const userId = req.body.userId;
+
+  const haveUserDetailInfo = await db
+    .collection("userDetailInfo")
+    .findOne({ userId: userId });
+  //있으면 true 없으면 false를 반환
+  console.log(haveUserDetailInfo);
+  haveUserDetailInfo === null ? res.send(false) : res.send(true);
 });

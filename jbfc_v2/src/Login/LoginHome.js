@@ -3,12 +3,44 @@ import LoginInput from "./LoginInput.js";
 import checkInputValid from "../CheckValid/checkInputValid.js";
 import LoginModel from "./LoginModel.js";
 
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { userIdState } from "../atoms.js";
+import axios from "axios";
+
 export default function LoginHome() {
   // URL간 이동을 위해 React Hook 사용
   const navigate = useNavigate();
-
   const goToHome = () => navigate(`/home`);
+  const goToSurvey = () => navigate(`/survey`);
   //LoginInput와 관련된 Submit
+  const [userIdRecoilState, setUserIdRecoilState] = useRecoilState(userIdState);
+
+  const saveUserIdInRecoil = (loginResult, ID) => {
+    if (loginResult) {
+      setUserIdRecoilState(ID);
+    }
+
+    // loginResult에 따라 ID를 Recoil에 저장
+  };
+
+  const findUserDetailInfo = async (userId) => {
+    const haveUserDetailInfo = await axios.post(
+      `http://localhost:8080/getUserDetailInfo`,
+      {
+        userId: userId,
+      }
+    );
+
+    return haveUserDetailInfo.data;
+  };
+
+  const goHomeOrSurvey = async () => {
+    const haveUserDetailInfo = await findUserDetailInfo();
+
+    haveUserDetailInfo ? goToHome() : goToSurvey();
+    // 있으면 home으로 없으면 설문조사하러
+  };
+
   const onSubmit = async (event) => {
     event.preventDefault();
     //ID, PW를 가져옴
@@ -23,8 +55,11 @@ export default function LoginHome() {
       checkvalid.checkPw();
       //통과하면 여기서부터 실행됨 => 서버에 ID PW넘겨주고 일치불일치를 찾아야함
       const loginmodel = new LoginModel(ID, PW);
-      const loginResult = await loginmodel.login();
-      console.log(loginResult);
+      const loginResult = (await loginmodel.login()).data;
+      saveUserIdInRecoil(loginResult, ID);
+      goHomeOrSurvey();
+      //여기서 true면 userId를 recoil에 저장하자
+
       //여기서 DB에 있는 정보인지를 판단함
       //판단하고 만약 play type이 정해져있지 않다면 설문 페이지를 rendering
     } catch (error) {
