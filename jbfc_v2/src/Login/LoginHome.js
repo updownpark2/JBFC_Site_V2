@@ -12,22 +12,24 @@ export default function LoginHome() {
   const navigate = useNavigate();
   const goToHome = () => navigate(`/home`);
   const goToSurvey = () => navigate(`/survey`);
+  const setUserDetailInfo = useSetRecoilState(userIdState);
   //LoginInput와 관련된 Submit
-  const [userIdRecoilState, setUserIdRecoilState] = useRecoilState(userIdState);
 
-  const saveUserIdInRecoil = (loginResult, ID) => {
-    if (loginResult) {
-      setUserIdRecoilState(ID);
-      return;
-    }
-    throw new Error(`login 정보가 존재하지 않습니다.`);
-    // 만약 일치하지 않는다면 error던지기
-    // loginResult에 따라 ID를 Recoil에 저장
+  const findUserDetailInfo = async (userId) => {
+    const haveUserDetailInfo = await axios.post(
+      `http://localhost:8080/getUserDetailInfo`,
+      {
+        userId: userId,
+      }
+    );
+    // 만약 해당 프로필에 대한 정보가 있으면 그냥 ㄱ 아니면 x
+    return haveUserDetailInfo.data;
   };
 
-  const goHomeOrSurvey = async () => {
-    console.log(userIdRecoilState);
-    userIdRecoilState === null ? goToSurvey() : goToHome();
+  const goHomeOrSurvey = async (ID) => {
+    const haveUserDetailInfo = await findUserDetailInfo(ID);
+
+    haveUserDetailInfo ? goToHome() : goToSurvey();
     // 있으면 home으로 없으면 설문조사하러
   };
 
@@ -45,11 +47,13 @@ export default function LoginHome() {
       checkvalid.checkPw();
       //통과하면 여기서부터 실행됨 => 서버에 ID PW넘겨주고 일치불일치를 찾아야함
       const loginmodel = new LoginModel(ID, PW);
-      const loginResult = (await loginmodel.login()).data;
+      await loginmodel.login();
+      //이게 DB에 Login에 알맞는 정보가 있는지를 확인해준다.
+      goHomeOrSurvey(ID);
+      // 만약 여기서 Home으로 간다면? 저장해야지 recoil을
+      setUserDetailInfo(ID);
+      //recoil은 여기서저장
 
-      saveUserIdInRecoil(loginResult, ID);
-
-      goHomeOrSurvey();
       //여기서 true면 userId를 recoil에 저장하자
 
       //여기서 DB에 있는 정보인지를 판단함

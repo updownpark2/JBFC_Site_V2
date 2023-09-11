@@ -27,6 +27,8 @@ export default class LoginModel {
       userPw: this.PW,
     });
 
-    return resultLogin;
+    if (resultLogin.data === false) {
+      throw new Error(`일치하지 않는 로그인 정보입니다.`);
+    }
   }
 }
