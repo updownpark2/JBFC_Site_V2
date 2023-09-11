@@ -1,4 +1,4 @@
-![image](https://github.com/updownpark2/JBFC_Site_V2/assets/101778169/5c0da189-014f-4eb6-a21e-b148a02d592a)
+![image](https://user-images.githubusercontent.com/101778169/234525035-73c7f3d0-146e-4919-badc-35285224a5e6.png)
 
 
 # JBFC_Site_V2
