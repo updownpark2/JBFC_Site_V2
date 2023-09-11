@@ -240,6 +240,26 @@ app.post(`/getUserDetailInfo`, async (req, res) => {
     .collection("userDetailInfo")
     .findOne({ userId: userId });
   //있으면 true 없으면 false를 반환
-  console.log(haveUserDetailInfo);
+
   haveUserDetailInfo === null ? res.send(false) : res.send(true);
+});
+
+app.post(`/insertUserDetailInfo`, async (req, res) => {
+  const nickName = req.body.nickName;
+  const backNum = req.body.backNum;
+  const positionNum = req.body.positionNum;
+  const userId = req.body.userId;
+  console.log(nickName, backNum, positionNum, userId);
+  try {
+    await db.collection("userDetailInfo").insertOne({
+      userId: userId,
+      nickName: nickName,
+      backNum: backNum,
+      positionNum: positionNum,
+    });
+
+    res.send("성공");
+  } catch (error) {
+    throw new Error("데이터 전송에 실패하였습니다.");
+  }
 });

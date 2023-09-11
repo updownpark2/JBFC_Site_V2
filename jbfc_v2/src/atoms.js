@@ -2,5 +2,5 @@ import { atom } from "recoil";
 
 export const userIdState = atom({
   key: "USERID",
-  default: ``,
+  default: null,
 });

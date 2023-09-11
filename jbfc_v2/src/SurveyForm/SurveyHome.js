@@ -1,17 +1,38 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import checkInputValid from "../CheckValid/checkInputValid";
 import SurveyInput from "./SurveyInput";
+import axios from "axios";
+import { useRecoilValue } from "recoil";
+import { userIdState } from "../atoms";
 
 export default function SurveyHome() {
   const navigate = useNavigate();
-
   const goToHome = () => navigate(`/home`);
+  const userId = useRecoilValue(userIdState);
+  // atoms에서 가져오는 userId에 대한 State
+  // 만약 저장되어 있지 않다면 ?로그인하지않은거니까
 
+  const insertUserDetailInfoInMongoDB = async (
+    nickName,
+    backNum,
+    positionNum
+  ) => {
+    try {
+      await axios.post(`http://localhost:8080/insertUserDetailInfo`, {
+        userId: userId,
+        nickName: nickName,
+        backNum: backNum,
+        positionNum: positionNum,
+      });
+      goToHome();
+    } catch (error) {
+      alert(error);
+    }
+  };
   // user가 입력한 닉네임과 등번호를 검증하기
   const validateUserInput = (event) => {
     // 초기화를 막고
     event.preventDefault();
-    console.log(event);
 
     const nicknameCandidate = event.target[0].value;
     const backNumCandidate = event.target[6].value;
@@ -33,10 +54,11 @@ export default function SurveyHome() {
       const backNum = checkinputvalid.checkBackNum();
       const positionNum = checkinputvalid.checkPosition(event);
 
-      console.log(nickName, backNum, positionNum);
+      // 여기서 서버랑 통신해야한다.
+
       // 만약 positionNum이 검증에 성공하면 그때의 포지션에 대한 정보를 저장한다.
 
-      goToHome();
+      insertUserDetailInfoInMongoDB(nickName, backNum, positionNum);
       // 통과하면 여기에서 이제 등번호와 포지션 닉네임을 저장하고 home으로 이동
     } catch (error) {
       alert(error.message);
@@ -46,7 +68,13 @@ export default function SurveyHome() {
 
   return (
     <div>
-      <SurveyInput validateUserInput={validateUserInput} />
+      {userId === null ? (
+        <div>
+          <Link to={`/`}>login하러가기</Link>
+        </div>
+      ) : (
+        <SurveyInput validateUserInput={validateUserInput} />
+      )}
     </div>
   );
 }

@@ -18,8 +18,10 @@ export default function LoginHome() {
   const saveUserIdInRecoil = (loginResult, ID) => {
     if (loginResult) {
       setUserIdRecoilState(ID);
+      return;
     }
-
+    throw new Error(`login 정보가 존재하지 않습니다.`);
+    // 만약 일치하지 않는다면 error던지기
     // loginResult에 따라 ID를 Recoil에 저장
   };
 
@@ -56,6 +58,7 @@ export default function LoginHome() {
       //통과하면 여기서부터 실행됨 => 서버에 ID PW넘겨주고 일치불일치를 찾아야함
       const loginmodel = new LoginModel(ID, PW);
       const loginResult = (await loginmodel.login()).data;
+
       saveUserIdInRecoil(loginResult, ID);
       goHomeOrSurvey();
       //여기서 true면 userId를 recoil에 저장하자
@@ -64,7 +67,7 @@ export default function LoginHome() {
       //판단하고 만약 play type이 정해져있지 않다면 설문 페이지를 rendering
     } catch (error) {
       // error가 존재한다면 alert로 메세지를 보냄
-      alert(error.message);
+      alert(error);
     }
   };
 
