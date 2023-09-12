@@ -6,18 +6,19 @@ import BoardOutput from "./BoardOutput";
 
 export default function BoardHome() {
   const [boardData, setBoardData] = useState([]);
+
   //여기서 초반에 Board 데이터를 가져와야함
   //이건 최초에 1회만 불러오기? => useEffect사용해서
 
   //insert하면 또 불러올 수 있도록
   const getBoardDataApi = async () => {
     //collection에 있는 거 다 가져오고싶으면?
-    let boardData = sliceBoardData(
-      await axios.get(`http://localhost:8080/getBoardData`)
-    );
+    let boardData = (await axios.get(`http://localhost:8080/getBoardData`))
+      .data;
+
     //9개까지만 자름
 
-    setBoardData(boardData);
+    setBoardData(sliceBoardData(boardData));
   };
   //함수명 변경필요
   //이제 이거를 useState로 저장해서 rerendering이 일어나게함
@@ -56,6 +57,7 @@ export default function BoardHome() {
     await insertBoardDataApi(event);
     await getBoardDataApi();
     initInput(event);
+    console.log("asd");
     //추가되면 새롭게 데이터를 가져올 수 있도록 다시 board에 get요청을 보내 데이터를 가져오고
     //setter함수를 사용해
     //state를 변환 시킨 후 out이 자동으로 rerendering되도록함

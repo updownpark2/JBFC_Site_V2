@@ -157,6 +157,8 @@ const insertBoardInMongoDB = async (title, text, month, day, userId) => {
       month: month,
       day: day,
       userId: userId,
+      likeThis: 0,
+      hateThis: 0,
     },
     (error, req) => console.log("저장")
   );
@@ -180,6 +182,17 @@ const getBoardData = async () => {
 
 app.get(`/getBoardData`, async (req, res) => {
   const boardData = await getBoardData();
+  boardData === null ? res.send([]) : res.send(boardData);
+});
+
+app.post(`/getBoardDetail`, async (req, res) => {
+  const boardId = req.body.boardId;
+
+  const boardDetail = await db
+    .collection(`board`)
+    .findOne({ _id: ObjectId(boardId) });
+  console.log("보냄");
+  res.send(boardDetail);
 });
 
 app.post(`/insertVoteData`, (req, res) => {
@@ -200,6 +213,7 @@ app.post(`/insertVoteData`, (req, res) => {
 // voteData전부를 가져와주는 함수
 app.get(`/getVoteData`, async (req, res) => {
   const voteData = await db.collection(`vote`).find({}).toArray();
+
   res.send(voteData);
 });
 
