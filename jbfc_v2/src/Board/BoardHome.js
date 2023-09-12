@@ -3,10 +3,12 @@ import BoardInput from "./BoardInput";
 import { getMonthDay, sliceBoardData } from "./BoardModel";
 import { useEffect, useState } from "react";
 import BoardOutput from "./BoardOutput";
+import { useRecoilValue } from "recoil";
+import { userIdState } from "../atoms";
 
 export default function BoardHome() {
   const [boardData, setBoardData] = useState([]);
-
+  const userId = useRecoilValue(userIdState);
   //여기서 초반에 Board 데이터를 가져와야함
   //이건 최초에 1회만 불러오기? => useEffect사용해서
 
@@ -36,7 +38,7 @@ export default function BoardHome() {
     const title = event.target[0].value;
     const text = event.target[1].value;
     const [month, day] = getMonthDay();
-    const userId = "상하";
+
     //나중에 변경사항
     await axios.post(`http://localhost:8080/insertBoard`, {
       title: title,
