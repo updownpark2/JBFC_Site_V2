@@ -1,7 +1,13 @@
 import { useLocation } from "react-router-dom";
-import { getBoardDetail, hateThisPush, likeThisPush } from "./BoardDetailModel";
+import {
+  getBoardDetail,
+  hateThisPush,
+  likeThisPush,
+  onClickComment,
+} from "./BoardDetailModel";
 import { useState } from "react";
 import { useEffect } from "react";
+import RepleContoller from "../Reple/RepleController";
 export default function BoardDetailOutput() {
   const { boardId } = useLocation().state;
   const [boardDetail, setBoardDetail] = useState([]);
@@ -26,6 +32,7 @@ export default function BoardDetailOutput() {
     };
     getAndsetBoardDetailApi();
   }, []);
+  // 바로바로 좋아요가 표시되도록해여함
 
   return (
     <div>
@@ -56,6 +63,7 @@ export default function BoardDetailOutput() {
           >
             👎
           </button>
+          <RepleContoller boardId={boardId} />
         </div>
       )}
     </div>
