@@ -233,6 +233,8 @@ export default function VoteHome() {
           <VoteOutputDetail
             inputDetailModalToggle={inputDetailModalToggle}
             setIsVoting={setIsVoting}
+            detailVoteId={detailVoteId}
+            voteDataDetail={voteDataDetail}
           />
         ) : (
           <VoteInputDetail
