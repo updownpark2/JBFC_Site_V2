@@ -63,7 +63,7 @@ export default function BoardDetailOutput() {
           >
             👎
           </button>
-          <RepleContoller boardId={boardId} />
+          <RepleContoller componentId={boardId} componentName="Board" />
         </div>
       )}
     </div>

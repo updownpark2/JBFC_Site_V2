@@ -5,6 +5,8 @@ import VoteOutput from "./VoteOutput";
 import ReactModal from "react-modal";
 import { useEffect, useState } from "react";
 import VoteInputDetail from "./VoteInputDetail";
+import { useRecoilValue } from "recoil";
+import { userIdState } from "../atoms";
 
 export default function VoteHome() {
   const [inputModalOpen, setInputModalOpen] = useState(false);
@@ -12,6 +14,7 @@ export default function VoteHome() {
   const [voteData, setVoteData] = useState(null);
   const [detailVoteId, setDetailVoteId] = useState(null);
   const [anonymousVoting, setAnonymousVoting] = useState(false);
+  const userId = useRecoilValue(userIdState);
   //detailVoteId는 해당 Vote 글의 ID를 저장하는 변수
 
   // voteOption을 찾아서 해당 value를 arr에 저장
@@ -152,18 +155,22 @@ export default function VoteHome() {
 
   const insertVoteDetailData = async (checkedData) => {
     await axios.post(`http://localhost:8080/insertVoteDetailData`, {
+      userId: userId,
       detailVoteId: detailVoteId,
       checkedData: checkedData,
       isAnonymous: anonymousVoting,
     });
-  };
+  }; //여기서 checkData가 true false에 따라 server에서 조절해야함 숫자를 count
+  //userId도 보내야할듯
 
   const voteDetail = (event) => {
     //User가 투표를 하면 해당 정보를 DB에 저장해야함
     event.preventDefault();
     const formData = event.target.parentElement;
     const checkedData = getCheckedData(formData);
-
+    //[true, false, false, false] 이런식으로 보내짐
+    // true면 해당 배열에 userId를 집어넣기
+    // 이중배열로해야할듯
     try {
       insertVoteDetailData(checkedData);
       alert("성공!");

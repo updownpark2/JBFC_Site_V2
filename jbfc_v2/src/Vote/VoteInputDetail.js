@@ -1,5 +1,7 @@
 //여기서는 자세한 투표input을 생성해서 이를 DB에 저장함
 
+import RepleContoller from "../Reple/RepleController";
+
 export default function VoteInputDetail({
   voteDataDetail,
   inputDetailModalToggle,
@@ -22,6 +24,8 @@ export default function VoteInputDetail({
   const voteDate = voteDataDetail.votedDate;
 
   //익명이면 ? 실시간 투표 안보이게 여기서 조절
+  console.log(voteDataDetail);
+  // 이 voteDateDetail에서 _id의 속성을 가져와서 해당 voteId랑 작성자 등을 넣으면된다.
 
   return voteDataDetail === null ? (
     <div>
@@ -52,6 +56,7 @@ export default function VoteInputDetail({
       <button type="button" onClick={inputDetailModalToggle}>
         ❌
       </button>
+      <RepleContoller componentId={voteDataDetail._id} componentName="Vote" />
     </div>
   );
 }

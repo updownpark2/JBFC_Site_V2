@@ -6,24 +6,27 @@ import RepleOutput from "./RepleOutput";
 import { useState } from "react";
 import { makeCurrentTime } from "./RepleModel";
 
-export default function RepleContoller({ boardId }) {
+export default function RepleContoller({ componentId, componentName }) {
   const userId = useRecoilValue(userIdState);
   const [repleArr, setRepleArr] = useState([]);
 
   const insertRepleValueInDB = async (repleValue) => {
     const currentTime = makeCurrentTime();
-    await axios.post(`http://localhost:8080/insertRepleValue`, {
+    await axios.post(`http://localhost:8080/insert${componentName}RepleValue`, {
       userId: userId,
-      boardId: boardId,
+      componentId: componentId,
       repleValue: repleValue,
       currentTime: currentTime,
     });
   };
 
   const getRepleValue = async () => {
-    const repleValue = await axios.post(`http://localhost:8080/getRepleValue`, {
-      boardId: boardId,
-    });
+    const repleValue = await axios.post(
+      `http://localhost:8080/get${componentName}RepleValue`,
+      {
+        componentId: componentId,
+      }
+    );
     const repleValueArr = await repleValue.data;
     setRepleArr(repleValueArr);
   };
@@ -35,7 +38,6 @@ export default function RepleContoller({ boardId }) {
     //이제 이걸 db에 보내자
     event.target[0].value = ``;
     await insertRepleValueInDB(repleValue);
-
     await getRepleValue();
   };
 
