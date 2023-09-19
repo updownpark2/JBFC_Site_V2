@@ -64,7 +64,7 @@ export default function VoteHome() {
       voteCheckBoxArr: voteCheckBoxArr,
     });
     // 저장하고 나면? votedata를 새롭게 업데이트해서 가져옴
-    getVoteData();
+    await getVoteData();
   };
 
   //modal을 키고 끌 수 있는 함수
@@ -151,7 +151,7 @@ export default function VoteHome() {
   };
 
   const insertVoteDetailData = async (checkedData) => {
-    axios.post(`http://localhost:8080/insertVoteDetailData`, {
+    await axios.post(`http://localhost:8080/insertVoteDetailData`, {
       detailVoteId: detailVoteId,
       checkedData: checkedData,
       isAnonymous: anonymousVoting,
