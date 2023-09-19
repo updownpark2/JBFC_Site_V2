@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import VoteInputDetail from "./VoteInputDetail";
 import { useRecoilValue } from "recoil";
 import { userIdState } from "../atoms";
+import voteOutputDetail from "./VoteOutputDetail";
+import VoteOutputDetail from "./VoteOutputDetail";
 
 export default function VoteHome() {
   const [inputModalOpen, setInputModalOpen] = useState(false);
@@ -15,6 +17,7 @@ export default function VoteHome() {
   const [detailVoteId, setDetailVoteId] = useState(null);
   const [anonymousVoting, setAnonymousVoting] = useState(false);
   const userId = useRecoilValue(userIdState);
+  const [isVoting, setIsVoting] = useState(false);
   //detailVoteId는 해당 Vote 글의 ID를 저장하는 변수
 
   // voteOption을 찾아서 해당 value를 arr에 저장
@@ -120,6 +123,28 @@ export default function VoteHome() {
     return detailVoteData.data;
   };
 
+  const getVoteRecord = async (voteDetailId) => {
+    const data = await axios.post(`http://localhost:8080/getVoteRecord`, {
+      _id: voteDetailId,
+    });
+
+    return data.data.checkedData;
+  };
+
+  const isVotingComplete = async (voteDetailId) => {
+    const voteRecord = await getVoteRecord(voteDetailId);
+    if (voteRecord === undefined) {
+      return false;
+    }
+    for (let i = 0; i < voteRecord.length; i++) {
+      if (voteRecord[i].includes(userId)) {
+        return true;
+      }
+    }
+    return false;
+  };
+  //처음 등록된 vote의 경우 detail이 아직생겨나지않음
+
   const goToDetailPage = async (e) => {
     //여기의 data를 가지고 다시 보내주자 input에게
     const detailVoteDataId = e.target.id;
@@ -129,14 +154,18 @@ export default function VoteHome() {
 
     //id가져왔으니까 이걸로 다시 서버와 통신해서 가져와야함
     const detailVoteData = await getDetailVoteData(detailVoteDataId);
-
     //여기서 익명투표인지를 컴포넌트에서 알 수 있도록 함
     const isAnonymous = detailVoteData.voteCheckBoxArr[0];
     setAnonymousVoting(isAnonymous);
-
     setVoteDataDetail(detailVoteData);
-    inputDetailModalToggle();
 
+    const voteResult = await isVotingComplete(detailVoteDataId);
+
+    setIsVoting(voteResult);
+
+    // 여기서 해당 투표결과를 가져옴
+
+    inputDetailModalToggle();
     //여기서 모달을 켬
   };
 
@@ -163,7 +192,7 @@ export default function VoteHome() {
   }; //여기서 checkData가 true false에 따라 server에서 조절해야함 숫자를 count
   //userId도 보내야할듯
 
-  const voteDetail = (event) => {
+  const voteDetail = async (event) => {
     //User가 투표를 하면 해당 정보를 DB에 저장해야함
     event.preventDefault();
     const formData = event.target.parentElement;
@@ -172,7 +201,7 @@ export default function VoteHome() {
     // true면 해당 배열에 userId를 집어넣기
     // 이중배열로해야할듯
     try {
-      insertVoteDetailData(checkedData);
+      await insertVoteDetailData(checkedData);
       alert("성공!");
       inputDetailModalToggle();
     } catch (error) {
@@ -181,6 +210,10 @@ export default function VoteHome() {
 
     // 이걸 가지고 DB에 저장할 수 있다이제
   };
+  //최초 1회 voteDetailData를 가져와야한다.
+
+  //여기서 voteOutputDetail?
+  // voteInputDetail을 받을지 결정
 
   return (
     <div>
@@ -196,11 +229,18 @@ export default function VoteHome() {
         />
       </ReactModal>
       <ReactModal isOpen={inputDetailModalOpen} ariaHideApp={false}>
-        <VoteInputDetail
-          voteDataDetail={voteDataDetail}
-          inputDetailModalToggle={inputDetailModalToggle}
-          voteDetail={voteDetail}
-        />
+        {isVoting ? (
+          <VoteOutputDetail
+            inputDetailModalToggle={inputDetailModalToggle}
+            setIsVoting={setIsVoting}
+          />
+        ) : (
+          <VoteInputDetail
+            voteDataDetail={voteDataDetail}
+            inputDetailModalToggle={inputDetailModalToggle}
+            voteDetail={voteDetail}
+          />
+        )}
       </ReactModal>
     </div>
   );
