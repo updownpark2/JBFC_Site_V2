@@ -2,6 +2,7 @@ import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { userIdState } from "../atoms";
 import { useEffect, useState } from "react";
+import RepleContoller from "../Reple/RepleController";
 
 export default function VoteOutputDetail({
   inputDetailModalToggle,
@@ -67,6 +68,8 @@ export default function VoteOutputDetail({
 
       <button onClick={modalOnOff}>❌</button>
       <button onClick={retryVote}>다시 투표하기</button>
+
+      <RepleContoller componentId={voteDataDetail._id} componentName="Vote" />
     </div>
   );
 }
