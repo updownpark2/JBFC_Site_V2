@@ -1,6 +1,6 @@
 import Router from "./Router";
 import { RecoilRoot } from "recoil";
-
+import "./style.css";
 function App() {
   return (
     <>
