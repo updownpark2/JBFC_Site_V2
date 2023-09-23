@@ -157,8 +157,8 @@ const insertBoardInMongoDB = async (title, text, month, day, userId) => {
       month: month,
       day: day,
       userId: userId,
-      likeThis: 0,
-      hateThis: 0,
+      likeThis: [],
+      hateThis: [],
     },
     (error, req) => console.log("저장")
   );
@@ -191,8 +191,48 @@ app.post(`/getBoardDetail`, async (req, res) => {
   const boardDetail = await db
     .collection(`board`)
     .findOne({ _id: ObjectId(boardId) });
-  console.log("보냄");
+
   res.send(boardDetail);
+});
+
+app.post(`/pushLikeThis`, async (req, res) => {
+  const boardId = req.body.boardId;
+  const userId = req.body.userId;
+
+  await db
+    .collection("board")
+    .updateOne({ _id: ObjectId(boardId) }, { $push: { likeThis: userId } });
+  res.send("성공");
+});
+
+app.post(`/pushHateThis`, async (req, res) => {
+  const boardId = req.body.boardId;
+  const userId = req.body.userId;
+
+  await db
+    .collection("board")
+    .updateOne({ _id: ObjectId(boardId) }, { $push: { hateThis: userId } });
+  res.send("성공");
+});
+
+app.post(`/popLikeThis`, async (req, res) => {
+  const boardId = req.body.boardId;
+  const userId = req.body.userId;
+
+  await db
+    .collection("board")
+    .updateOne({ _id: ObjectId(boardId) }, { $pull: { likeThis: userId } });
+  res.send("성공");
+});
+
+app.post(`/popHateThis`, async (req, res) => {
+  const boardId = req.body.boardId;
+  const userId = req.body.userId;
+
+  await db
+    .collection("board")
+    .updateOne({ _id: ObjectId(boardId) }, { $pull: { hateThis: userId } });
+  res.send("성공");
 });
 
 app.post(`/insertVoteData`, (req, res) => {
@@ -226,25 +266,90 @@ app.post(`/getDetailVoteData`, async (req, res) => {
   res.send(detailVoteData);
 });
 
-const insertVoteDetailData = async (detailVoteId, checkedData, isAnonymous) => {
-  await db.collection(`voteDetail`).insertOne({
+const insertVoteDetailData = async (
+  userId,
+  detailVoteId,
+  checkedData,
+  isAnonymous
+) => {
+  const detailData = await db.collection(`voteDetail`).findOne({
     detailVoteId: detailVoteId,
-    checkedData: checkedData,
-    isAnonymous: isAnonymous,
   });
+
+  if (detailData === null) {
+    // 만약 해당 데이터가 저장된게 없다면?
+    const checkData = checkedData.map((item) => (item ? [userId] : []));
+    await db.collection(`voteDetail`).insertOne({
+      detailVoteId: detailVoteId,
+      checkedData: checkData,
+      isAnonymous: isAnonymous,
+    });
+    // 새롭게 데이터를 추가해준다 이때 checkedData에 userId를 넣어준다.
+  } else if (detailData !== null) {
+    // 만약 해당 데이터가 저장된게 있다면?
+    for (let i = 0; i < checkedData.length; i++) {
+      if (checkedData[i]) {
+        //만약 true를 반환했다면?
+        detailData.checkedData[i].push(userId);
+      }
+    }
+
+    await db.collection(`voteDetail`).updateOne(
+      {
+        detailVoteId: detailVoteId,
+      },
+      { $set: { checkedData: detailData.checkedData } }
+    );
+    // 기존의 배열에 해당 UserId를 추가해서 업데이트해준다.
+  }
 };
 
 app.post(`/insertVoteDetailData`, async (req, res) => {
+  const userId = req.body.userId;
+  //이게 한 사람만 되도록 이름 그냥 넣기
   const detailVoteId = req.body.detailVoteId;
   const checkedData = req.body.checkedData;
   const isAnonymous = req.body.isAnonymous;
 
   try {
-    await insertVoteDetailData(detailVoteId, checkedData, isAnonymous);
+    await insertVoteDetailData(userId, detailVoteId, checkedData, isAnonymous);
     res.send("성공");
   } catch (error) {
     throw new Error(error);
   }
+});
+
+app.post(`/getVoteRecord`, async (req, res) => {
+  const voteId = req.body._id;
+  const voteRecord = await db
+    .collection(`voteDetail`)
+    .findOne({ detailVoteId: voteId });
+
+  res.send(voteRecord);
+
+  //처음 만든경우 아무것도 찾지못하니까 null에 대한 처리를 해주어야한다.
+});
+
+app.post(`/cancelVote`, async (req, res) => {
+  const detailVoteId = req.body.detailVoteId;
+  const userId = req.body.userId;
+
+  const voteDetail = await db
+    .collection("voteDetail")
+    .findOne({ detailVoteId: detailVoteId });
+  const voteResult = await voteDetail.checkedData;
+  for (let i = 0; i < voteResult.length; i++) {
+    if (voteResult[i].indexOf(userId) !== undefined) {
+      //만약있으면
+      voteResult[i].splice(voteResult[i].indexOf(userId), 1);
+    }
+  }
+  await db
+    .collection(`voteDetail`)
+    .updateOne(
+      { detailVoteId: detailVoteId },
+      { $set: { checkedData: voteResult } }
+    );
 });
 
 app.post(`/getUserDetailInfo`, async (req, res) => {
@@ -263,7 +368,7 @@ app.post(`/insertUserDetailInfo`, async (req, res) => {
   const backNum = req.body.backNum;
   const positionNum = req.body.positionNum;
   const userId = req.body.userId;
-  console.log(nickName, backNum, positionNum, userId);
+
   try {
     await db.collection("userDetailInfo").insertOne({
       userId: userId,
@@ -276,4 +381,54 @@ app.post(`/insertUserDetailInfo`, async (req, res) => {
   } catch (error) {
     throw new Error("데이터 전송에 실패하였습니다.");
   }
+});
+
+app.post(`/insertBoardRepleValue`, async (req, res) => {
+  const userId = req.body.userId;
+  const componentId = req.body.componentId;
+  const repleValue = req.body.repleValue;
+  const currentTime = req.body.currentTime;
+  await db.collection(`boardReple`).insertOne({
+    userId: userId,
+    componentId: componentId,
+    repleValue: repleValue,
+    currentTime: currentTime,
+  });
+  res.send(`성공`);
+});
+
+app.post(`/getBoardRepleValue`, async (req, res) => {
+  const componentId = req.body.componentId;
+
+  const repleValueArr = await db
+    .collection(`boardReple`)
+    .find({ componentId: componentId })
+    .toArray();
+
+  res.send(repleValueArr);
+});
+
+app.post(`/insertVoteRepleValue`, async (req, res) => {
+  const userId = req.body.userId;
+  const componentId = req.body.componentId;
+  const repleValue = req.body.repleValue;
+  const currentTime = req.body.currentTime;
+  await db.collection(`boardReple`).insertOne({
+    userId: userId,
+    componentId: componentId,
+    repleValue: repleValue,
+    currentTime: currentTime,
+  });
+  res.send(`성공`);
+});
+
+app.post(`/getVoteRepleValue`, async (req, res) => {
+  const componentId = req.body.componentId;
+
+  const repleValueArr = await db
+    .collection(`boardReple`)
+    .find({ componentId: componentId })
+    .toArray();
+
+  res.send(repleValueArr);
 });
