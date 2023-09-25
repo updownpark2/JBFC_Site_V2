@@ -1,8 +1,11 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import PollutionProcessor from "./PollutionProcessor.js";
+import PollutionOutput from "./PollutionOuput.js";
 
 export default function PollutionHome() {
+  const [pollutionData, setPollutionData] = useState([]);
+
   const callPollutionAPI = async () => {
     try {
       //여기서 미세먼지 정보를 가져오고
@@ -26,7 +29,7 @@ export default function PollutionHome() {
         PollutionProcessor(pollutionData);
       //여기서 이제 pollutionModel로 보내서 데이터 가공후에
       // 받아서 뿌리면된다.
-      console.log(pm10Value, pm25Value, pm10Grade, pm25Grade);
+      setPollutionData([pm10Value, pm25Value, pm10Grade, pm25Grade]);
     } catch (error) {
       alert(error);
       // 실패한다면 해당 에러 메세지를 가져와 던진다.
@@ -37,5 +40,13 @@ export default function PollutionHome() {
   }, []);
   // 나중엔 useQuery로 호출해서 캐싱도하고 isLoading 변수를 사용해서 Loading창도만들어야함
 
-  return <div>미세먼지알려줭</div>;
+  return (
+    <div>
+      {pollutionData.length === 0 ? (
+        <h3>로딩중</h3>
+      ) : (
+        <PollutionOutput pollutionData={pollutionData} />
+      )}
+    </div>
+  );
 }

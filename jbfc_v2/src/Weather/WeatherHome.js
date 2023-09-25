@@ -1,15 +1,10 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import WeatherProcessor from "./WeatherProcessor";
+import WeatherOutput from "./WeatherOutput";
 
 export default function WeatherHome() {
-  //여기서 API를 호출해서
-
-  // Model에 보내고
-
-  // Model에서 Control로 다시 정보를 보내주면
-
-  // View를 통해 보여주자
+  const [weatherData, setWeaterData] = useState([]);
 
   const callGeolocationAPI = () => {
     // 위치정보를 가져오는 API
@@ -45,10 +40,10 @@ export default function WeatherHome() {
       const weatherData = await callWeatherAPI(lat, lon);
       const weatherprocessor = new WeatherProcessor(weatherData);
       //여기서 이제 weather model로내서 데이터 가공후에
-      const [readableTime, morningEveningNight] =
+      const [timeWeatherData, temperaturData] =
         weatherprocessor.getProcessedTimeData();
       // 받아서 뿌리면된다.
-      console.log(readableTime, morningEveningNight);
+      setWeaterData([timeWeatherData, temperaturData]);
     } catch (error) {
       alert(error);
       // 실패한다면 해당 에러 메세지를 가져와 던진다.
@@ -58,5 +53,13 @@ export default function WeatherHome() {
     getWeatherData();
   }, []);
 
-  return <div>날씨보여주는곳</div>;
+  return (
+    <div>
+      {weatherData === [] ? (
+        <h2>로딩중</h2>
+      ) : (
+        <WeatherOutput weaterData={weatherData} />
+      )}
+    </div>
+  );
 }
