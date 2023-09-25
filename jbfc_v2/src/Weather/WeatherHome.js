@@ -55,10 +55,10 @@ export default function WeatherHome() {
 
   return (
     <div>
-      {weatherData === [] ? (
+      {weatherData.length === 0 ? (
         <h2>로딩중</h2>
       ) : (
-        <WeatherOutput weaterData={weatherData} />
+        <WeatherOutput weatherData={weatherData} />
       )}
     </div>
   );
