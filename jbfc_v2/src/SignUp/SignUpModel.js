@@ -9,7 +9,7 @@ export default class SignUpModel {
     this.userPw = userPw;
   }
 
-  async #findIdInMongoDB() {
+  async findIdInMongoDB() {
     const postCandidateID = await axios.post(
       "http://localhost:8080/isDuplicateID",
       {
@@ -17,14 +17,10 @@ export default class SignUpModel {
       }
     );
 
-    this.#idExist = postCandidateID.data;
+    const isHaveIdInMongoDB = await postCandidateID.data;
+
+    return isHaveIdInMongoDB;
     // DB에 있는지 없는지를 확인하는 boolean 타입을 반환받음
-  }
-
-  async getIdExist() {
-    await this.#findIdInMongoDB();
-
-    return this.#idExist;
   }
 
   #insertIdInMongoDB() {

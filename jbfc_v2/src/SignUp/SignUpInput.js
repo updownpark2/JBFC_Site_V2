@@ -5,7 +5,7 @@ export default function SignUpInput({
   checkDuplicateID,
   idExist,
 }) {
-  const [passwordVisible, setPasswordVisible] = useState(true);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = (event) => {
     event.preventDefault();
@@ -56,7 +56,7 @@ export default function SignUpInput({
             className="absolute inset-y-0 right-0 px-3 py-2 focus:outline-none"
             type="button"
           >
-            👁
+            👀
           </button>
         </div>
         <div className="mb-6">
