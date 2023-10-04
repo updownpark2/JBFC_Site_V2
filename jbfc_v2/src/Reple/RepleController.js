@@ -44,7 +44,7 @@ export default function RepleContoller({ componentId, componentName }) {
   //여기서 그려야지
 
   return (
-    <div>
+    <div className="bg-white p-4 mb-4 rounded-lg shadow-md">
       <RepleInput onSubmitReple={onSubmitReple} />
       <RepleOutput repleValue={repleArr} getRepleValue={getRepleValue} />
     </div>
