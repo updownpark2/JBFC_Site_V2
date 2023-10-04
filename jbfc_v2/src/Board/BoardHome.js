@@ -59,15 +59,13 @@ export default function BoardHome() {
     await insertBoardDataApi(event);
     await getBoardDataApi();
     initInput(event);
-    console.log("asd");
-    //추가되면 새롭게 데이터를 가져올 수 있도록 다시 board에 get요청을 보내 데이터를 가져오고
-    //setter함수를 사용해
-    //state를 변환 시킨 후 out이 자동으로 rerendering되도록함
   };
 
   return (
-    <div>
-      <h1>게시판!</h1>
+    <div className="bg-purple-300 min-h-screen p-4">
+      <div className="text-center mb-4">
+        <h1 className="text-3xl font-semibold text-purple-800">게시판</h1>
+      </div>
       <BoardInput submitPost={submitPost} />
       <BoardOutput boardData={boardData} />
     </div>
